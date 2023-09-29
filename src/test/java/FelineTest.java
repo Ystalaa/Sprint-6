@@ -1,36 +1,51 @@
-import java.util.List;
-import org.junit.Test;
-import org.junit.Before;
-import static org.junit.Assert.assertEquals;
 import org.example.*;
 
-public class FelineTest {
-    private Feline FELINE;
+import junit.framework.TestCase;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnitRunner;
 
-    @Before
-    public void createNewInstance() {
-        FELINE = new Feline();
-    }
-    @Test
+@RunWith(MockitoJUnitRunner.class)
+public class FelineTest extends TestCase {
+    private final String expected = "Кошачьи";
+    private static final int EXPECTED_KITTENS_COUNT_FOR_MOCK = 1;
+    private int kittensCount = 5;
 
-    public void eatMeat() throws Exception {
-        List<String> list = FELINE.eatMeat();
-        int actual = list.size();
-        int expected = 3;
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void getFamily() {
-        String actual = FELINE.getFamily();
-        String expected = "Кошачьи";
-        assertEquals(expected, actual);
-    }
+    @Spy
+    private Feline feline;
 
     @Test
-    public void getKittens() {
-        int actual = FELINE.getKittens();
-        int expected = 1;
-        assertEquals(expected, actual);
+    public void testEatMeat() throws Exception {
+        feline.eatMeat();
+        Mockito.verify(feline, Mockito.times(1)).getFood("Хищник");
+    }
+
+    @Test
+    public void testGetFamily() {
+        String actual = feline.getFamily();
+        Mockito.verify(feline, Mockito.times(1)).getFamily();
+
+        assertEquals("Ожидаемое семейство не соответствует фактическому",
+                expected, actual);
+    }
+
+    @Test
+    public void testGetKittens() {
+        int actual = feline.getKittens();
+        Mockito.verify(feline).getKittens(EXPECTED_KITTENS_COUNT_FOR_MOCK);
+
+        assertEquals("Количество котят не соответствует ожидаемому",
+                EXPECTED_KITTENS_COUNT_FOR_MOCK, actual);
+    }
+
+    @Test
+    public void testTestGetKittens() {
+        int actual = feline.getKittens(kittensCount);
+        Mockito.verify(feline).getKittens(Mockito.anyInt());
+
+        assertEquals("Количество котят не соответствует ожидаемому",
+                kittensCount, actual);
     }
 }

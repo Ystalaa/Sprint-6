@@ -1,34 +1,44 @@
 import org.example.*;
-import java.util.List;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Parameterized.class)
-
 public class AnimalParametrizedTest {
-    private final String ANIMAL_KIND;
-    private final List<String> EXPECTED;
+    private Animal animal;
+    private static final String ANIMAL_KIND_HERBIVORE = "Травоядное";
+    private static final String ANIMAL_KIND_PREDATOR = "Хищник";
+    private static final List<String> FOODS_HERBIVORE = List.of("Трава", "Различные растения");
+    private static final List<String> FOODS_PREDATOR = List.of("Животные", "Птицы", "Рыба");
 
-    public AnimalParametrizedTest(String animalKind, List<String> expected) {
-        this.ANIMAL_KIND = animalKind;
-        this.EXPECTED = expected;
+    private final String animalKind;
+    private final List<String> foods;
+
+    public AnimalParametrizedTest(String animalKind, List<String> foods) {
+        this.animalKind = animalKind;
+        this.foods = foods;
     }
 
-    @Parameterized.Parameters(name = "{index} : getFood({0}) = {1}")
-    public static Object[][] getFoodData() {
-        return new Object[][] {
-                {"Травоядное", List.of("Трава", "Различные растения")},
-                {"Хищник", List.of("Животные", "Птицы", "Рыба")}
+    @Parameterized.Parameters
+    public static Object[][] getParameters() {
+        return new Object[][]{
+                {ANIMAL_KIND_HERBIVORE, FOODS_HERBIVORE},
+                {ANIMAL_KIND_PREDATOR, FOODS_PREDATOR}
         };
     }
 
+    @Before
+    public void setUp() {
+        animal = new Animal();
+    }
+
     @Test
-    public void getFood() throws Exception {
-        Animal animal = new Animal();
-        List<String> list = animal.getFood(ANIMAL_KIND);
-        int actual = list.size();
-        assertEquals(EXPECTED.size(), actual);
+    public void testGetFood() throws Exception {
+        List<String> actual = animal.getFood(animalKind);
+        assertEquals("Список еды для животных не совпадает с ожидаемым",
+                foods, actual);
     }
 }

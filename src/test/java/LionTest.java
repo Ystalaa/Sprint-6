@@ -1,56 +1,48 @@
-import java.util.List;
+import org.example.Lion;
+import org.example.Feline;
+
+import junit.framework.TestCase;
 import org.junit.Test;
-import org.junit.Rule;
-import org.mockito.Mock;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.junit.rules.ExpectedException;
 import org.mockito.junit.MockitoJUnitRunner;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import org.example.*;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 @RunWith(MockitoJUnitRunner.class)
-public class LionTest {
-    private static final String VALID_GENDER = "Самец";
-    private static final String INVALID_GENDER = "invalidGender";
-    private static final String EXPECTION_MESSAGE = "Используйте допустимые значения пола животного - самец или самка";
-
+public class LionTest extends TestCase {
+    private static final String MALE = "Самец";
+    private static final String UNSUPPORTED_SEX = "unsupported sex";
+    private static final String TEXT_EXCEPTION = "Используйте допустимые значения пола животного - самец или самка";
+    private Lion lion;
     @Mock
-    private Feline FELINE;
-
-    @Rule
-    public ExpectedException exceptionRule = ExpectedException.none();
+    private Feline feline;
 
     @Test
-    public void getKittens() throws Exception {
-        Lion lion = new Lion(VALID_GENDER, FELINE);
-        Mockito.when(FELINE.getKittens()).thenReturn(1);
-        int actual = lion.getKittens();
-        int expected = 1;
-        assertEquals(expected, actual);
+    public void testGetKittens() throws Exception {
+        lion = new Lion(MALE, feline);
+
+        lion.getKittens();
+        Mockito.verify(feline).getKittens();
     }
 
     @Test
-    public void doesHaveMane() throws Exception {
-        Lion lion = new Lion(VALID_GENDER, FELINE);
-        boolean actual = lion.doesHaveMane();
-        assertTrue(actual);
+    public void testDoesHaveManeException() {
+        Throwable throwable = catchThrowable(() -> {
+            lion = new Lion(UNSUPPORTED_SEX, feline);
+        });
+        assertThat(throwable)
+                .isInstanceOf(Exception.class)
+                .hasMessage(TEXT_EXCEPTION);
     }
 
     @Test
-    public void getFood() throws Exception {
-        Lion lion = new Lion(VALID_GENDER, FELINE);
-        Mockito.when(FELINE.getFood("Хищник")).thenReturn(List.of("Животные", "Птицы", "Рыба"));
-        List<String> actual = lion.getFood();
-        List<String> expected = List.of("Животные", "Птицы", "Рыба");
-        assertEquals(expected, actual);
-    }
+    public void testGetFood() throws Exception {
+        lion = new Lion(MALE, feline);
 
-    @Test
-    public void checkExceptionByCreateLion() throws Exception {
-        exceptionRule.expect(Exception.class);
-        exceptionRule.expectMessage(EXPECTION_MESSAGE);
-        Lion lion = new Lion(INVALID_GENDER, FELINE);
+        lion.getFood();
+        Mockito.verify(feline).getFood(Mockito.anyString());
     }
 }

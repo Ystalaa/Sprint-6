@@ -1,32 +1,44 @@
+import org.example.*;
+
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.junit.runners.Parameterized;
+import org.mockito.Mockito;
+
 import static org.junit.Assert.assertEquals;
-import org.example.*;
 
 @RunWith(Parameterized.class)
 public class LionParametrizedTest {
-    private final String GENDER;
-    private final boolean EXPECTED;
-    public LionParametrizedTest(String gender, boolean expected) {
-        this.GENDER = gender;
-        this.EXPECTED = expected;
+    private static final String MALE = "Самец";
+    private static final String FEMALE = "Самка";
+    private Lion lion;
+    private Feline feline;
+    private String sex;
+    private boolean hasMane;
+
+    @Before
+    public void setUp() {
+        feline = Mockito.mock(Feline.class);
     }
 
-    @Parameterized.Parameters(name = "{index} : doesHaveMane() = {1}")
-    public static Object[][] lionIsCreateData() {
+    public LionParametrizedTest(String sex, boolean hasMane) {
+        this.sex = sex;
+        this.hasMane = hasMane;
+    }
+
+    @Parameterized.Parameters
+    public static Object[][] getParameters() {
         return new Object[][] {
-                {"Самец", true},
-                {"Самка", false}
+                {MALE, true},
+                {FEMALE, false}
         };
     }
 
     @Test
-    public void lionIsCreate() throws Exception {
-        Feline feline = Mockito.mock(Feline.class);
-        Lion lion = new Lion(GENDER, feline);
+    public void testDoesHaveMane() throws Exception {
+        lion = new Lion(sex, feline);
         boolean actual = lion.doesHaveMane();
-        assertEquals(EXPECTED, actual);
+        assertEquals(hasMane, actual);
     }
 }

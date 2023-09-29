@@ -7,6 +7,7 @@ public class Lion {
 
     public Lion(String gender, Feline feline) throws Exception {
         this.feline = feline;
+
         if ("Самец".equals(gender)) {
             hasMane = true;
         } else if ("Самка".equals(gender)) {
